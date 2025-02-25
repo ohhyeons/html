@@ -93,11 +93,18 @@ function setCurrentState(state) {
             finishTurn();
             break
         case "End":
+            // 게임이 끝나는 곳
+            // 결과창을 보여준다.
+            // 여기서 데이터를 보내는코드를 작성하던가
+            gaemEnd();
             break;
     }
     DrawBoard();
 }
 
+function gaemEnd() {
+
+}
 function finishTurn(){
     turn += 1;
     if (coolTime > 0) {coolTime -= 1;}
@@ -155,6 +162,7 @@ function simulate() {
         setCurrentState("Move");
     } else {
         console.log("No valid moves");
+        // 게임 종료
         setCurrentState("End");
     }
 }
