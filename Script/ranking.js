@@ -41,7 +41,7 @@ async function saveRanking(nickname, turn, score, playTime) {
     };
 
     try {
-        const response = await fetch('save_rank.php', {
+        const response = await fetch('./php/save_rank.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
