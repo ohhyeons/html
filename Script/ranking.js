@@ -52,6 +52,7 @@ async function saveRanking(nickname, turn, score, playTime) {
         const result = await response.json();
         if (result.success) {
             alert('랭킹이 저장되었습니다!');
+            // ./php/get_rankings.php에서 데이터를 가져와서 테이블(<tbody>)에 동적으로 채움움
             loadRankings(); // 저장 후 랭킹 새로고침
         } else {
             alert('오류: ' + result.message);
@@ -67,4 +68,4 @@ window.onload = function() {
 };
 
 // 테스트용 호출 예시 (게임에서 호출할 때 사용)
-// saveRanking('홍길동', 50, 1500, '00:12:34');
+saveRanking('홍길동', 50, 1500, '00:12:34');
