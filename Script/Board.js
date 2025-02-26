@@ -116,6 +116,7 @@ function formatMilliseconds(milliseconds) {
 
     return `${formattedMinutes}:${formattedSeconds}:${formattedMillis}`;
 }
+
 function gameEnding() {
     console.log('게임이 끝났습니다!');
     const nickname = prompt("닉네임을 입력하세요:");
