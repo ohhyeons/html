@@ -1,16 +1,15 @@
-
 <?php
 $host = 'localhost'; // MySQL 서버가 같은 EC2 인스턴스에 있는 경우
-$db   = 'Reverse2048_DB';  // 생성한 데이터베이스 이름
+$db = 'Reverse2048_DB';  // 생성한 데이터베이스 이름
 $user = 'ubuntu';          // 생성한 MySQL 사용자 이름
 $pass = '000012345';     // ubuntu 사용자의 비밀번호 (안전한 비밀번호로!)
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
 $options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
+    PDO::ATTR_EMULATE_PREPARES => false,
 ];
 
 try {
@@ -20,24 +19,33 @@ try {
     $data = json_decode(file_get_contents('php://input'), true); // JSON 데이터 파싱
 
 
-    // 데이터 유효성 검사
-    if (empty($data['nickname']) || empty($data['turn']) || !isset($data['score'])) {
-        //isset은 0도 false로 인식하기 때문에 !isset으로 하는게 맞다.
-        throw new Exception('필수 데이터가 누락되었습니다.');
+    // 누락된 필드를 저장할 배열
+    $missingFields = [];
+
+    // 각 필드를 개별적으로 검사하고, 누락된 경우 $missingFields 배열에 추가
+    if (empty($data['nickname'])) {
+        $missingFields[] = 'nickname';
+    }
+    if (empty($data['turn'])) {
+        $missingFields[] = 'turn';
+    }
+    if (empty($data['playTime'])) {
+        $missingFields[] = 'playTime';
     }
 
+    // 누락된 필드가 있으면 오류 응답
+    if (!empty($missingFields)) {
+        http_response_code(400); // Bad Request
 
-    // 닉네임 중복 검사
-    $stmt = $pdo->prepare("SELECT COUNT(*) FROM rankings WHERE nickname = ?");
-    $stmt->execute([$data['nickname']]);
-    if ($stmt->fetchColumn() > 0) {
-        throw new Exception('이미 사용 중인 닉네임입니다.');
+        // 누락된 필드 목록을 쉼표로 연결하여 메시지 생성
+        $message = '필수 데이터가 누락되었습니다: ' . implode(', ', $missingFields);
+        echo json_encode(['success' => false, 'message' => $message]);
+        exit;
     }
-
 
     // 랭킹 데이터 삽입
-    $stmt = $pdo->prepare("INSERT INTO rankings (nickname, turn, score) VALUES (?, ?, ?)");
-    $stmt->execute([$data['nickname'], $data['turn'], $data['score']]);
+    $stmt = $pdo->prepare("INSERT INTO rankings (nickname, turn, play_time) VALUES (?, ?, ?)");
+    $stmt->execute([$data['nickname'], $data['turn'], $data['playTime']]);
 
     // 성공 응답
     echo json_encode(['success' => true]);

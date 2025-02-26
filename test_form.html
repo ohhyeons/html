@@ -39,7 +39,7 @@
             const data = { nickname, turn, score };
 
             try {
-                const response = await fetch('save_practice_data.php', { // PHP 파일 이름
+                const response = await fetch('test_data.php', { // PHP 파일 이름
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
